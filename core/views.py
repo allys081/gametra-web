@@ -78,4 +78,5 @@ def dejar_resena(request, juego_id):
 
 def detalle_juego(request, juego_id):
     juego = get_object_or_404(Juego, id=juego_id)
-    return render(request, 'detalle_juego.html', {'juego': juego})
+    resenas = Reseña.objects.filter(juego=juego)
+    return render(request, 'detalle_juego.html', {'juego': juego, 'resenas': resenas})
