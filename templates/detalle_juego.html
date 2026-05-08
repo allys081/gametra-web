@@ -2,138 +2,300 @@
 
 {% block content %}
 <style>
-    .reply-container {
-        border-left: 3px solid #dee2e6;
-        margin-left: 25px;
-        padding-left: 15px;
-        margin-top: 10px;
-        margin-bottom: 15px;
+    body { background-color: #dae0e6; }
+
+    .game-card {
+        background: #fff;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        margin-bottom: 16px;
+        padding: 16px;
     }
-    .comment-box {
-        background-color: #fff;
-        padding: 15px;
-        border-radius: 8px;
+
+    .comment-section {
+        background: #fff;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        padding: 16px;
+        margin-bottom: 16px;
     }
-    .reply-form-area {
-        display: none;
+
+    .comment {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
     }
-    .reply-form-area.active {
+
+    .comment-left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 32px;
+        flex-shrink: 0;
+    }
+
+    .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #0079d3;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .thread-line {
+        width: 2px;
+        flex-grow: 1;
+        background: #edeff1;
+        margin-top: 4px;
+        cursor: pointer;
+        border-radius: 2px;
+        min-height: 20px;
+    }
+    .thread-line:hover { background: #0079d3; }
+
+    .comment-body { flex: 1; }
+
+    .comment-meta {
+        font-size: 12px;
+        color: #878a8c;
+        margin-bottom: 4px;
+    }
+    .comment-meta strong { color: #1c1c1c; margin-right: 6px; }
+
+    .comment-text {
+        font-size: 14px;
+        color: #1c1c1c;
+        margin-bottom: 6px;
+        line-height: 1.5;
+    }
+
+    .comment-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+    .comment-actions button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #878a8c;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 4px 6px;
+        border-radius: 2px;
+    }
+    .comment-actions button:hover { background: #edeff1; color: #1c1c1c; }
+
+    .replies { margin-left: 16px; margin-top: 8px; }
+
+    .reply-form-area { display: none; margin: 8px 0; }
+    .reply-form-area.active { display: block; }
+
+    .reply-textarea {
+        width: 100%;
+        border: 1px solid #edeff1;
+        border-radius: 4px;
+        padding: 8px;
+        font-size: 14px;
+        resize: vertical;
+        min-height: 60px;
+        background: #f6f7f8;
+        box-sizing: border-box;
+    }
+    .reply-textarea:focus { outline: none; border-color: #0079d3; background: #fff; }
+
+    .new-comment-box {
+        border: 1px solid #edeff1;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 8px;
+    }
+    .new-comment-box textarea {
+        width: 100%;
+        border: none;
+        padding: 10px;
+        font-size: 14px;
+        resize: vertical;
+        min-height: 80px;
+        background: #f6f7f8;
+        box-sizing: border-box;
         display: block;
     }
+    .new-comment-box textarea:focus { outline: none; background: #fff; }
+    .new-comment-box .form-footer {
+        background: #f6f7f8;
+        padding: 6px 10px;
+        border-top: 1px solid #edeff1;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .btn-reddit {
+        background: #ff4500;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 6px 16px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .btn-reddit:hover { background: #e03d00; }
+
+    .btn-reddit-outline {
+        background: transparent;
+        color: #0079d3;
+        border: 1px solid #0079d3;
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .btn-reddit-outline:hover { background: #e8f0fe; }
+
+    .sort-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #878a8c;
+    }
+    .sort-bar span { color: #0079d3; }
+
+    .locked-box {
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 16px;
+        text-align: center;
+        color: #878a8c;
+        font-size: 14px;
+        margin-bottom: 16px;
+    }
+    .locked-box a { color: #0079d3; font-weight: 700; text-decoration: none; }
 </style>
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+<div class="container py-3" style="max-width: 740px;">
 
-            <!-- Detalle del juego -->
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">{{ juego.titulo }}</h2>
-                </div>
-                <div class="card-body">
-                    <p class="lead">{{ juego.descripcion }}</p>
-                    <hr>
-                    <small class="text-muted">Publicado por: <strong>{{ juego.creado_por.username }}</strong></small>
-                </div>
-            </div>
-
-            <!-- Reseñas -->
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body">
-                    <h3 class="text-primary mb-4">Reseñas de la comunidad</h3>
-
-                    {% if user.is_authenticated %}
-                        {% if resenas %}
-                            {% for resena in resenas %}
-                            <div class="mb-4">
-                                <div class="comment-box border shadow-sm">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <strong>👤 {{ resena.usuario.username }}</strong>
-                                        <small class="text-muted">{{ resena.creado_en|date:"d/m/Y" }}</small>
-                                    </div>
-                                    <p class="mt-2 mb-2">{{ resena.comentario }}</p>
-                                    <button class="btn btn-sm btn-outline-secondary"
-                                            onclick="toggleReplyForm('reply-form-{{ resena.id }}')">
-                                        💬 Responder
-                                    </button>
-                                    <div id="reply-form-{{ resena.id }}" class="reply-form-area mt-2">
-                                        <form method="POST" action="{% url 'dejar_resena' juego.id %}">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="parent_id" value="{{ resena.id }}">
-                                            <div class="mb-2">
-                                                <textarea name="comentario" class="form-control form-control-sm"
-                                                          rows="2" placeholder="Escribe tu respuesta..." required></textarea>
-                                            </div>
-                                            <button type="submit" class="btn btn-sm btn-primary">Publicar respuesta</button>
-                                            <button type="button" class="btn btn-sm btn-link text-secondary"
-                                                    onclick="toggleReplyForm('reply-form-{{ resena.id }}')">Cancelar</button>
-                                        </form>
-                                    </div>
-                                </div>
-                                {% for respuesta in resena.replies.all %}
-                                <div class="reply-container">
-                                    <div class="comment-box border-bottom bg-light">
-                                        <div class="d-flex justify-content-between">
-                                            <strong>👤 {{ respuesta.usuario.username }}</strong>
-                                            <small class="text-muted">{{ respuesta.creado_en|date:"d/m/Y" }}</small>
-                                        </div>
-                                        <p class="mt-1 mb-0">{{ respuesta.comentario }}</p>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="text-center py-3">
-                                <p class="text-muted">Aún no hay reseñas. ¡Sé el primero en opinar!</p>
-                            </div>
-                        {% endif %}
-                    {% else %}
-                        <div class="alert alert-info border-0 shadow-sm">
-                            🔒 <a href="{% url 'login' %}" class="fw-bold">Inicia sesión</a>
-                            para ver las reseñas de la comunidad y dejar la tuya.
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Formulario nueva reseña -->
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h4 class="mb-3">Deja tu opinión</h4>
-                    {% if user.is_authenticated %}
-                        <form method="POST" action="{% url 'dejar_resena' juego.id %}" id="resenaForm">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <textarea name="comentario" id="txtComentario" class="form-control"
-                                          rows="3" placeholder="Escribe tu reseña aquí..."></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary fw-bold">Publicar Reseña</button>
-                        </form>
-                    {% else %}
-                        <div class="alert alert-warning border-0 shadow-sm">
-                            Debes <a href="{% url 'login' %}" class="fw-bold">iniciar sesión</a> para dejar una reseña.
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="mt-4 mb-5">
-                <a href="{% url 'juegos' %}" class="btn btn-link text-decoration-none">← Volver al catálogo</a>
-            </div>
-
-        </div>
+    <!-- Detalle del juego -->
+    <div class="game-card">
+        <h4 style="color:#1c1c1c; margin-bottom:6px;">{{ juego.titulo }}</h4>
+        <p style="color:#3c3c3c; font-size:14px; margin-bottom:8px;">{{ juego.descripcion }}</p>
+        <small style="color:#878a8c;">Publicado por <strong>{{ juego.creado_por.username }}</strong></small>
     </div>
+
+    <!-- Formulario nueva reseña -->
+    {% if user.is_authenticated %}
+    <div class="comment-section" style="padding-bottom:8px;">
+        <p style="font-size:13px; color:#878a8c; margin-bottom:8px;">
+            Comentando como <strong style="color:#0079d3;">{{ user.username }}</strong>
+        </p>
+        <form method="POST" action="{% url 'dejar_resena' juego.id %}" id="resenaForm">
+            {% csrf_token %}
+            <div class="new-comment-box">
+                <textarea name="comentario" id="txtComentario"
+                          placeholder="¿Qué piensas sobre este juego?"></textarea>
+                <div class="form-footer">
+                    <button type="submit" class="btn-reddit">Comentar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="locked-box">
+        🔒 <a href="{% url 'login' %}">Inicia sesión</a> para comentar y ver las reseñas de la comunidad.
+    </div>
+    {% endif %}
+
+    <!-- Sección de reseñas -->
+    {% if user.is_authenticated %}
+    <div class="comment-section">
+        <div class="sort-bar">💬 <span>Mejores</span> comentarios</div>
+
+        {% if resenas %}
+            {% for resena in resenas %}
+            <div class="comment">
+                <div class="comment-left">
+                    <div class="avatar">{{ resena.usuario.username|first|upper }}</div>
+                    <div class="thread-line"></div>
+                </div>
+                <div class="comment-body">
+                    <div class="comment-meta">
+                        <strong>{{ resena.usuario.username }}</strong>
+                        {{ resena.creado_en|date:"d/m/Y" }}
+                    </div>
+                    <div class="comment-text">{{ resena.comentario }}</div>
+                    <div class="comment-actions">
+                        <button onclick="toggleReplyForm('reply-form-{{ resena.id }}')">💬 Responder</button>
+                    </div>
+
+                    <!-- Formulario de respuesta -->
+                    <div id="reply-form-{{ resena.id }}" class="reply-form-area">
+                        <form method="POST" action="{% url 'dejar_resena' juego.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="parent_id" value="{{ resena.id }}">
+                            <textarea name="comentario" class="reply-textarea"
+                                      placeholder="Escribe tu respuesta..." required></textarea>
+                            <div style="margin-top:6px; display:flex; gap:8px;">
+                                <button type="submit" class="btn-reddit" style="font-size:12px; padding:4px 14px;">Responder</button>
+                                <button type="button" class="btn-reddit-outline"
+                                        onclick="toggleReplyForm('reply-form-{{ resena.id }}')">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Respuestas anidadas -->
+                    <div class="replies">
+                        {% for respuesta in resena.replies.all %}
+                        <div class="comment">
+                            <div class="comment-left">
+                                <div class="avatar" style="background:#ff4500;">{{ respuesta.usuario.username|first|upper }}</div>
+                            </div>
+                            <div class="comment-body">
+                                <div class="comment-meta">
+                                    <strong>{{ respuesta.usuario.username }}</strong>
+                                    {{ respuesta.creado_en|date:"d/m/Y" }}
+                                </div>
+                                <div class="comment-text">{{ respuesta.comentario }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align:center; padding:32px; color:#878a8c; font-size:14px;">
+                Aún no hay comentarios. ¡Sé el primero en opinar!
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="mb-4">
+        <a href="{% url 'juegos' %}" style="color:#0079d3; font-size:14px; text-decoration:none;">← Volver al catálogo</a>
+    </div>
+
 </div>
 
 <script>
     const form = document.getElementById('resenaForm');
     if (form) {
         form.onsubmit = function(e) {
-            let comentario = document.getElementById('txtComentario').value;
-            if (comentario.trim() === "") {
-                alert("¡No puedes dejar una reseña vacía!");
+            const comentario = document.getElementById('txtComentario').value;
+            if (comentario.trim() === '') {
+                alert('¡No puedes dejar un comentario vacío!');
                 e.preventDefault();
             }
         };
@@ -141,9 +303,7 @@
 
     function toggleReplyForm(id) {
         const area = document.getElementById(id);
-        if (area) {
-            area.classList.toggle('active');
-        }
+        if (area) area.classList.toggle('active');
     }
 </script>
 {% endblock %}
