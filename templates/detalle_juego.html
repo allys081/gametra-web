@@ -1,27 +1,9 @@
 {% extends 'base.html' %}
 
+{% block content %}
 <style>
     .reply-container {
         border-left: 3px solid #dee2e6;
-        margin-left: 25px;
-        padding-left: 15px;
-        margin-top: 10px;
-        margin-bottom: 15px;
-    }
-    /* Oculta los formularios de respuesta por defecto */
-    .reply-form-area {
-        display: none;
-    }
-    .reply-form-area.active {
-        display: block;
-    }
-</style>
-
-{% block content %}
-<style>
-    /* Estilo para simular hilos de conversación (estilo Reddit) */
-    .reply-container {
-        border-left: 3px solid #dee2e6; /* Línea gris de conexión */
         margin-left: 25px;
         padding-left: 15px;
         margin-top: 10px;
@@ -32,21 +14,19 @@
         padding: 15px;
         border-radius: 8px;
     }
-
     .reply-form-area {
-    display: none;
-}
-.reply-form-area.active {
-    display: block;
-}
-
-
+        display: none;
+    }
+    .reply-form-area.active {
+        display: block;
+    }
 </style>
 
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            
+
+            <!-- Detalle del juego -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-primary text-white">
                     <h2 class="mb-0">{{ juego.titulo }}</h2>
@@ -58,93 +38,67 @@
                 </div>
             </div>
 
+            <!-- Reseñas -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body">
-                    
-                <h3 class="text-primary mb-4">Reseñas de la comunidad</h3>
+                    <h3 class="text-primary mb-4">Reseñas de la comunidad</h3>
 
-{% if user.is_authenticated %}
-
-    {% if resenas %}
-        {% for resena in resenas %}
-        <div class="mb-4">
-
-            <div class="comment-box border shadow-sm">
-                <div class="d-flex justify-content-between align-items-start">
-                    <strong>👤 {{ resena.usuario.username }}</strong>
-                    <small class="text-muted">{{ resena.creado_en|date:"d/m/Y" }}</small>
-                </div>
-                <p class="mt-2 mb-2">{{ resena.comentario }}</p>
-
-                <!-- Botón para responder -->
-                <button class="btn btn-sm btn-outline-secondary"
-                        onclick="toggleReplyForm('reply-form-{{ resena.id }}')">
-                    💬 Responder
-                </button>
-
-                <!-- Formulario de respuesta (oculto por defecto) -->
-                <div id="reply-form-{{ resena.id }}" class="reply-form-area mt-2">
-                    <form method="POST" action="{% url 'dejar_resena' juego.id %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="parent_id" value="{{ resena.id }}">
-                        <div class="mb-2">
-                            <textarea name="comentario" class="form-control form-control-sm"
-                                      rows="2" placeholder="Escribe tu respuesta..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-sm btn-primary">Publicar respuesta</button>
-                        <button type="button" class="btn btn-sm btn-link text-secondary"
-                                onclick="toggleReplyForm('reply-form-{{ resena.id }}')">Cancelar</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Respuestas anidadas -->
-            {% for respuesta in resena.replies.all %}
-            <div class="reply-container">
-                <div class="comment-box border-bottom bg-light">
-                    <div class="d-flex justify-content-between">
-                        <strong>👤 {{ respuesta.usuario.username }}</strong>
-                        <small class="text-muted">{{ respuesta.creado_en|date:"d/m/Y" }}</small>
-                    </div>
-                    <p class="mt-1 mb-0">{{ respuesta.comentario }}</p>
-                </div>
-            </div>
-            {% endfor %}
-
-        </div>
-        {% endfor %}
-
-    {% else %}
-        <div class="text-center py-3">
-            <p class="text-muted">Aún no hay reseñas. ¡Sé el primero en opinar!</p>
-        </div>
-    {% endif %}
-
-{% else %}
-    <div class="alert alert-info border-0 shadow-sm">
-        🔒 <a href="{% url 'login' %}" class="fw-bold">Inicia sesión</a>
-        para ver las reseñas de la comunidad y dejar la tuya.
-    </div>
-{% endif %}    
-
-{% else %}
-    <!-- Usuario no logueado: no ve las reseñas -->
-    <div class="alert alert-info border-0 shadow-sm">
-        🔒 <a href="{% url 'login' %}" class="fw-bold">Inicia sesión</a>
-        para ver las reseñas de la comunidad y dejar la tuya.
-    </div>
-{% endif %}
-
+                    {% if user.is_authenticated %}
+                        {% if resenas %}
+                            {% for resena in resenas %}
+                            <div class="mb-4">
+                                <div class="comment-box border shadow-sm">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <strong>👤 {{ resena.usuario.username }}</strong>
+                                        <small class="text-muted">{{ resena.creado_en|date:"d/m/Y" }}</small>
+                                    </div>
+                                    <p class="mt-2 mb-2">{{ resena.comentario }}</p>
+                                    <button class="btn btn-sm btn-outline-secondary"
+                                            onclick="toggleReplyForm('reply-form-{{ resena.id }}')">
+                                        💬 Responder
+                                    </button>
+                                    <div id="reply-form-{{ resena.id }}" class="reply-form-area mt-2">
+                                        <form method="POST" action="{% url 'dejar_resena' juego.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="parent_id" value="{{ resena.id }}">
+                                            <div class="mb-2">
+                                                <textarea name="comentario" class="form-control form-control-sm"
+                                                          rows="2" placeholder="Escribe tu respuesta..." required></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-sm btn-primary">Publicar respuesta</button>
+                                            <button type="button" class="btn btn-sm btn-link text-secondary"
+                                                    onclick="toggleReplyForm('reply-form-{{ resena.id }}')">Cancelar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                {% for respuesta in resena.replies.all %}
+                                <div class="reply-container">
+                                    <div class="comment-box border-bottom bg-light">
+                                        <div class="d-flex justify-content-between">
+                                            <strong>👤 {{ respuesta.usuario.username }}</strong>
+                                            <small class="text-muted">{{ respuesta.creado_en|date:"d/m/Y" }}</small>
+                                        </div>
+                                        <p class="mt-1 mb-0">{{ respuesta.comentario }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-3">
+                                <p class="text-muted">Aún no hay reseñas. ¡Sé el primero en opinar!</p>
                             </div>
                         {% endif %}
-                    {% empty %}
-                        <div class="text-center py-3">
-                            <p class="text-muted">Aún no hay reseñas. ¡Sé el primero en opinar!</p>
+                    {% else %}
+                        <div class="alert alert-info border-0 shadow-sm">
+                            🔒 <a href="{% url 'login' %}" class="fw-bold">Inicia sesión</a>
+                            para ver las reseñas de la comunidad y dejar la tuya.
                         </div>
-                    {% endfor %}
+                    {% endif %}
                 </div>
             </div>
 
+            <!-- Formulario nueva reseña -->
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <h4 class="mb-3">Deja tu opinión</h4>
@@ -152,7 +106,8 @@
                         <form method="POST" action="{% url 'dejar_resena' juego.id %}" id="resenaForm">
                             {% csrf_token %}
                             <div class="mb-3">
-                                <textarea name="comentario" id="txtComentario" class="form-control" rows="3" placeholder="Escribe tu reseña aquí..."></textarea>
+                                <textarea name="comentario" id="txtComentario" class="form-control"
+                                          rows="3" placeholder="Escribe tu reseña aquí..."></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary fw-bold">Publicar Reseña</button>
                         </form>
@@ -167,7 +122,7 @@
             <div class="mt-4 mb-5">
                 <a href="{% url 'juegos' %}" class="btn btn-link text-decoration-none">← Volver al catálogo</a>
             </div>
-            
+
         </div>
     </div>
 </div>
@@ -179,18 +134,16 @@
             let comentario = document.getElementById('txtComentario').value;
             if (comentario.trim() === "") {
                 alert("¡No puedes dejar una reseña vacía!");
-                e.preventDefault(); 
+                e.preventDefault();
             }
         };
     }
 
-    // ← Agregar esta función nueva
-function toggleReplyForm(id) {
-    const area = document.getElementById(id);
-    if (area) {
-        area.classList.toggle('active');
+    function toggleReplyForm(id) {
+        const area = document.getElementById(id);
+        if (area) {
+            area.classList.toggle('active');
+        }
     }
-}
-    
 </script>
 {% endblock %}
