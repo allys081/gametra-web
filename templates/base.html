@@ -21,31 +21,37 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="/">GAMETRA </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'juegos' %}">Juegos</a></li>
-                    {% if user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi Perfil</a></li>
-                        <li class="nav-item">
-                            <form action="{% url 'logout' %}" method="post" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-light btn-sm mt-1">Salir</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <li class="nav-item"><a class="btn btn-warning btn-sm mt-1" href="{% url 'login' %}">Iniciar Sesión</a></li>
-                    {% endif %}
-                </ul>
-            </div>
+    <!-- Agregamos una clase dinámica: si está logueado, se le añade 'border-bottom border-warning' -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top {% if user.is_authenticated %}border-bottom border-warning border-3 shadow-lg{% endif %}">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">GAMETRA </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'juegos' %}">Juegos</a></li>
+                
+                {% if user.is_authenticated %}
+                    <!-- MOSTRAR SOLO A LOGUEADOS -->
+                    <li class="nav-item"><a class="nav-link fw-bold text-warning" href="{% url 'perfil' %}">👤 Mi Perfil</a></li>
+                    <li class="nav-item">
+                        <form action="{% url 'logout' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-light btn-sm mt-1 ms-2">Cerrar Sesión</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <!-- MOSTRAR SOLO A VISITANTES -->
+                    <li class="nav-item">
+                        <a class="btn btn-warning btn-sm mt-1" href="{% url 'login' %}">Iniciar Sesión</a>
+                    </li>
+                {% endif %}
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <div class="container main-container">
         {% block content %}
@@ -72,6 +78,7 @@
             };
         });
     </script>
+    
 </body>
 </body>
 </html>

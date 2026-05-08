@@ -7,25 +7,54 @@
         <p class="text-muted">Explora los títulos disponibles en nuestra plataforma.</p>
     </div>
 
+    <!-- BUCLE PARA MOSTRAR JUEGOS REALES -->
+    {% for juego in juegos %}
     <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
+        <div class="card h-100 shadow-sm border-0">
             <div class="card-body">
-                <h5 class="card-title fw-bold">Nombre del Juego</h5>
-                <p class="card-text text-secondary">Esta es una breve descripción del juego y sus características principales.</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge bg-success">Público</span>
-                    <a href="#" class="btn btn-sm btn-outline-primary">Ver detalles</a>
+                <div class="d-flex justify-content-between">
+                    <h5 class="card-title fw-bold text-primary">{{ juego.titulo }}</h5>
+                    {% if juego.es_publico %}
+                        <span class="badge bg-success" style="height: fit-content;">Público</span>
+                    {% else %}
+                        <span class="badge bg-secondary" style="height: fit-content;">Privado</span>
+                    {% endif %}
                 </div>
+
+                <hr>
+
+                {% if user.is_authenticated %}
+                    <!-- VISTA PRIVADA: DETALLES COMPLETOS -->
+                    <p class="card-text text-dark">{{ juego.descripcion }}</p>
+                    <div class="mt-3">
+                        <small class="text-muted">Agregado por: <strong>{{ juego.creado_por.username }}</strong></small>
+                        <a href="#" class="btn btn-primary btn-sm w-100 mt-2">Escribir Reseña</a>
+                    </div>
+                {% else %}
+                    <!-- VISTA PÚBLICA: RESTRINGIDA -->
+                    <p class="card-text text-secondary text-truncate">Esta descripción es solo para miembros...</p>
+                    <div class="p-3 bg-light rounded text-center border">
+                        <p class="small text-muted mb-2">🔒 Información protegida</p>
+                        <a href="{% url 'login' %}" class="btn btn-sm btn-outline-primary">Ingresa para ver más</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
+    {% empty %}
+    <!-- Mensaje por si Macka no ha creado juegos todavía -->
+    <div class="col-12 text-center py-5">
+        <p class="text-muted">Aún no hay juegos registrados en la base de datos.</p>
+    </div>
+    {% endfor %}
 
+    <!-- ALERTA PARA NO LOGUEADOS AL FINAL -->
     {% if not user.is_authenticated %}
     <div class="col-12 mt-4">
-        <div class="alert alert-warning text-center">
-            <h5>¿Quieres ver más?</h5>
-            <p>Los usuarios registrados pueden acceder a juegos exclusivos y dejar sus propias reseñas.</p>
-            <a href="/login/" class="btn btn-warning">Iniciar Sesión ahora</a>
+        <div class="alert alert-warning text-center shadow-sm">
+            <h5>¿Quieres ver más títulos exclusivos?</h5>
+            <p>Los usuarios registrados pueden acceder a detalles completos y dejar sus propias reseñas.</p>
+            <a href="{% url 'login' %}" class="btn btn-warning fw-bold">Iniciar Sesión ahora</a>
         </div>
     </div>
     {% endif %}
