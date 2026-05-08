@@ -70,9 +70,9 @@ def dejar_resena(request, juego_id):
         Reseña.objects.create(
             juego=juego,
             usuario=request.user,
-            comentario=comentario,
-            calificacion=5  # O el valor que captures
+            comentario=comentario
         )
+
     return redirect('detalle_juego', juego_id=juego_id)
 
 
