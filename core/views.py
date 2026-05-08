@@ -31,6 +31,7 @@ def registro(request):
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
+            # EL MENSAJE VA AQUÍ:
             messages.success(
                 request, f'¡Cuenta creada para {username}! Ya puedes iniciar sesión.')
             return redirect('login')
@@ -44,7 +45,6 @@ def crear_juego(request):
     if request.method == 'POST':
         titulo = request.POST.get('titulo')
         descripcion = request.POST.get('descripcion')
-        # Capturamos si el checkbox está marcado
         es_publico = request.POST.get('es_publico') == 'on'
 
         Juego.objects.create(
@@ -53,5 +53,9 @@ def crear_juego(request):
             es_publico=es_publico,
             creado_por=request.user
         )
+        # EL MENSAJE VA AQUÍ:
+        messages.success(
+            request, f'¡El juego "{titulo}" se ha publicado con éxito!')
         return redirect('juegos')
+
     return render(request, 'crear_juego.html')
