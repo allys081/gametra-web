@@ -15,10 +15,11 @@ class Juego(models.Model):
 
 class Reseña(models.Model):
     juego = models.ForeignKey(
-        Juego, on_delete=models.CASCADE, related_name='reseñas')
+        Juego, on_delete=models.CASCADE, related_name='resenas')
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    texto = models.TextField()
-    fecha = models.DateTimeField(auto_now_add=True)
+    comentario = models.TextField()
+    calificacion = models.IntegerField()  # Ejemplo: 1 a 5
+    creado_en = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Reseña de {self.usuario.username} en {self.juego.titulo}"
+        return f"Reseña de {self.usuario.username} para {self.juego.titulo}"

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Juego
+from .models import Juego, Reseña
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 
@@ -59,3 +59,18 @@ def crear_juego(request):
         return redirect('juegos')
 
     return render(request, 'crear_juego.html')
+
+
+@login_required
+def dejar_resena(request, juego_id):
+    if request.method == 'POST':
+        juego = Juego.objects.get(id=juego_id)
+        comentario = request.POST.get('comentario')
+        # Guardamos la reseña vinculada al usuario actual
+        Reseña.objects.create(
+            juego=juego,
+            usuario=request.user,
+            comentario=comentario,
+            calificacion=5  # O el valor que captures
+        )
+    return redirect('detalle_juego', juego_id=juego_id)
