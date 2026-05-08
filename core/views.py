@@ -61,18 +61,19 @@ def crear_juego(request):
     return render(request, 'crear_juego.html')
 
 
+# ✅ CÓDIGO CORRECTO
+
 @login_required
 def dejar_resena(request, juego_id):
     if request.method == 'POST':
-        juego = get_object_or_404(Juego, id=juego_id)
+        juego = get_object_or_404(Juego, id=juego_id)    # seguro si no existe
         comentario = request.POST.get('comentario', '').strip()
-        # ← nuevo: id de la reseña padre
+        # para respuestas a reseñas
         parent_id = request.POST.get('parent_id')
 
-        if comentario:
+        if comentario:                                     # solo guarda si no está vacío
             parent = None
             if parent_id:
-                # Verificamos que el parent pertenezca al mismo juego
                 parent = Reseña.objects.filter(
                     id=parent_id, juego=juego).first()
 
@@ -80,7 +81,7 @@ def dejar_resena(request, juego_id):
                 juego=juego,
                 usuario=request.user,
                 comentario=comentario,
-                parent=parent  # ← nuevo: puede ser None o una reseña existente
+                parent=parent
             )
 
     return redirect('detalle_juego', juego_id=juego_id)
@@ -88,12 +89,12 @@ def dejar_resena(request, juego_id):
 
 def detalle_juego(request, juego_id):
     juego = get_object_or_404(Juego, id=juego_id)
-    resenas = None  # por defecto no cargamos nada
+    resenas = None
 
     if request.user.is_authenticated:
         resenas = Reseña.objects.filter(
             juego=juego,
-            parent=None  # ← solo reseñas raíz; las respuestas se cargan desde replies
+            parent=None                                    # solo reseñas raíz
         ).prefetch_related('replies__usuario').select_related('usuario').order_by('-creado_en')
 
     return render(request, 'detalle_juego.html', {'juego': juego, 'resenas': resenas})
