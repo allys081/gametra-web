@@ -22,9 +22,12 @@ urlpatterns = [
     # 1. Ruta para el panel de administración
     path('admin/', admin.site.urls),
 
-    # 2. Ruta para el login (asegurándonos que busque el template correcto)
+    # 2. Ruta para el login
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
 
-    # 3. Ruta para el resto de tu aplicación (home, juegos, perfil)
+    # 3. ESTA ES LA QUE FALTA: Ruta para el logout
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+
+    # 4. Ruta para el resto de tu aplicación
     path('', include('core.urls')),
 ]
