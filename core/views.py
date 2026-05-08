@@ -64,19 +64,36 @@ def crear_juego(request):
 @login_required
 def dejar_resena(request, juego_id):
     if request.method == 'POST':
-        juego = Juego.objects.get(id=juego_id)
-        comentario = request.POST.get('comentario')
-        # Guardamos la reseña vinculada al usuario actual
-        Reseña.objects.create(
-            juego=juego,
-            usuario=request.user,
-            comentario=comentario
-        )
+        juego = get_object_or_404(Juego, id=juego_id)
+        comentario = request.POST.get('comentario', '').strip()
+        # ← nuevo: id de la reseña padre
+        parent_id = request.POST.get('parent_id')
+
+        if comentario:
+            parent = None
+            if parent_id:
+                # Verificamos que el parent pertenezca al mismo juego
+                parent = Reseña.objects.filter(
+                    id=parent_id, juego=juego).first()
+
+            Reseña.objects.create(
+                juego=juego,
+                usuario=request.user,
+                comentario=comentario,
+                parent=parent  # ← nuevo: puede ser None o una reseña existente
+            )
 
     return redirect('detalle_juego', juego_id=juego_id)
 
 
 def detalle_juego(request, juego_id):
     juego = get_object_or_404(Juego, id=juego_id)
-    resenas = Reseña.objects.filter(juego=juego)
+    resenas = None  # por defecto no cargamos nada
+
+    if request.user.is_authenticated:
+        resenas = Reseña.objects.filter(
+            juego=juego,
+            parent=None  # ← solo reseñas raíz; las respuestas se cargan desde replies
+        ).prefetch_related('replies__usuario').select_related('usuario').order_by('-creado_en')
+
     return render(request, 'detalle_juego.html', {'juego': juego, 'resenas': resenas})
