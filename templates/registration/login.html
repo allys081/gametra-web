@@ -32,8 +32,9 @@
                     </div>
                 </form>
             </div>
-            <div class="card-footer text-center py-3">
-                <p class="mb-0 text-muted small">¿No tienes cuenta? Contacta al administrador.</p>
+            <!-- Busca esta parte al final de tu login.html y cámbiala -->
+        <div class="card-footer text-center py-3">
+            <p class="mb-0 text-muted small">¿No tienes cuenta? <a href="{% url 'registro' %}" class="text-primary text-decoration-none fw-bold">Regístrate aquí</a></p>
             </div>
         </div>
     </div>
