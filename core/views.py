@@ -37,3 +37,21 @@ def registro(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/registro.html', {'form': form})
+
+
+@login_required
+def crear_juego(request):
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        descripcion = request.POST.get('descripcion')
+        # Capturamos si el checkbox está marcado
+        es_publico = request.POST.get('es_publico') == 'on'
+
+        Juego.objects.create(
+            titulo=titulo,
+            descripcion=descripcion,
+            es_publico=es_publico,
+            creado_por=request.user
+        )
+        return redirect('juegos')
+    return render(request, 'crear_juego.html')
