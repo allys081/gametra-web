@@ -12,21 +12,29 @@
                     {% csrf_token %}
                     
                     {% for field in form %}
-                        <div class="mb-3">
+                        <div class="mb-3 position-relative">
                             <label class="form-label fw-bold small">{{ field.label }}</label>
                             
                             {% if "password" in field.id_for_label %}
-                                <!-- Contenedor especial para campos de contraseña -->
                                 <div class="input-group">
                                     {{ field }}
                                     <button class="btn btn-outline-secondary toggle-password" type="button">👁️</button>
                                 </div>
+                                <!-- REQUISITOS EN ESPAÑOL -->
+                                <div class="password-requirements">
+                                    <p class="fw-bold mb-1">Tu contraseña debe tener:</p>
+                                    <ul>
+                                        <li>Al menos 8 caracteres.</li>
+                                        <li>No puede ser similar a tu nombre de usuario.</li>
+                                        <li>No puede ser una contraseña muy común.</li>
+                                        <li>No puede ser solo números.</li>
+                                    </ul>
+                                </div>
                             {% else %}
                                 {{ field }}
-                            {% endif %}
-
-                            {% if field.help_text %}
-                                <div class="form-text text-muted">{{ field.help_text|safe }}</div>
+                                {% if field.name == "username" %}
+                                    <div class="custom-help-text">Máximo 150 caracteres. Solo letras, números y @/./+/-/_.</div>
+                                {% endif %}
                             {% endif %}
 
                             {% for error in field.errors %}
@@ -36,7 +44,7 @@
                     {% endfor %}
 
                     <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary">Unirse a la comunidad</button>
+                        <button type="submit" class="btn btn-primary fw-bold">Registrarse</button>
                     </div>
                 </form>
             </div>
@@ -48,27 +56,54 @@
 </div>
 
 <style>
-    /* Estilo para los inputs de Django */
+    /* Ocultar textos originales de Django en inglés */
+    .form-text { display: none !important; } 
+
+    /* Estilo de los inputs */
     input { 
-        display: block; width: 100%; padding: 0.375rem 0.75rem; 
-        font-size: 1rem; color: #212529; background-color: #fff; 
+        display: block; width: 100%; padding: 0.4rem 0.75rem; 
         border: 1px solid #ced4da; border-radius: 0.375rem; 
     }
-    /* Estilo para los requisitos de contraseña */
-    .form-text ul { 
-        font-size: 0.8rem; color: #6c757d; list-style: none; 
-        padding: 10px; background: #eee; border-radius: 5px; margin-top: 5px;
+    .input-group input { border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; }
+
+    /* Cuadros de ayuda en español */
+    .password-requirements, .custom-help-text {
+        background: #f8f4ff;
+        border-left: 4px solid #6f42c1;
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-top: 8px;
+        font-size: 0.8rem;
+        color: #555;
+        display: none; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
-    .form-text li::before { content: "• "; color: #6f42c1; font-weight: bold; }
+
+    .password-requirements ul { list-style: none; padding: 0; margin: 0; }
+    .password-requirements li::before { content: "• "; color: #6f42c1; font-weight: bold; }
+
+    /* Mostrar al hacer clic (focus) */
+    input:focus ~ .password-requirements, 
+    .input-group:focus-within ~ .password-requirements,
+    input:focus ~ .custom-help-text {
+        display: block;
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .toggle-password {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        background-color: white;
+        border-left: none;
+    }
 </style>
 
 <script>
-    // Lógica para todos los botones de "ver contraseña"
     document.querySelectorAll('.toggle-password').forEach(button => {
         button.addEventListener('click', function() {
-            // Buscamos el input que está justo antes del botón
             const input = this.previousElementSibling;
-            
             if (input.type === "password") {
                 input.type = "text";
                 this.textContent = "🔒";
