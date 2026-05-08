@@ -32,6 +32,15 @@
         padding: 15px;
         border-radius: 8px;
     }
+
+    .reply-form-area {
+    display: none;
+}
+.reply-form-area.active {
+    display: block;
+}
+
+
 </style>
 
 <div class="container">
@@ -52,7 +61,7 @@
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body">
                     
-                    <h3 class="text-primary mb-4">Reseñas de la comunidad</h3>
+                <h3 class="text-primary mb-4">Reseñas de la comunidad</h3>
 
 {% if user.is_authenticated %}
 
@@ -60,7 +69,6 @@
         {% for resena in resenas %}
         <div class="mb-4">
 
-            <!-- Reseña principal -->
             <div class="comment-box border shadow-sm">
                 <div class="d-flex justify-content-between align-items-start">
                     <strong>👤 {{ resena.usuario.username }}</strong>
@@ -68,7 +76,7 @@
                 </div>
                 <p class="mt-2 mb-2">{{ resena.comentario }}</p>
 
-                <!-- Botón que abre el formulario de respuesta -->
+                <!-- Botón para responder -->
                 <button class="btn btn-sm btn-outline-secondary"
                         onclick="toggleReplyForm('reply-form-{{ resena.id }}')">
                     💬 Responder
@@ -111,6 +119,13 @@
             <p class="text-muted">Aún no hay reseñas. ¡Sé el primero en opinar!</p>
         </div>
     {% endif %}
+
+{% else %}
+    <div class="alert alert-info border-0 shadow-sm">
+        🔒 <a href="{% url 'login' %}" class="fw-bold">Inicia sesión</a>
+        para ver las reseñas de la comunidad y dejar la tuya.
+    </div>
+{% endif %}    
 
 {% else %}
     <!-- Usuario no logueado: no ve las reseñas -->
