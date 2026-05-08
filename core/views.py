@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Juego, Reseña
 from django.contrib.auth.forms import UserCreationForm
@@ -74,3 +74,8 @@ def dejar_resena(request, juego_id):
             calificacion=5  # O el valor que captures
         )
     return redirect('detalle_juego', juego_id=juego_id)
+
+
+def detalle_juego(request, juego_id):
+    juego = get_object_or_404(Juego, id=juego_id)
+    return render(request, 'detalle_juego.html', {'juego': juego})

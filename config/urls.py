@@ -17,21 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from core import views  # <-- Agrega esto para que reconozca la carpeta core
 
 urlpatterns = [
-    # 1. Ruta para el panel de administración
     path('admin/', admin.site.urls),
-
-    # 2. Ruta para el login
+    # Manejo de Autenticación
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
-
-    # 3. ESTA ES LA QUE FALTA: Ruta para el logout
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-
-    # 4. Ruta para el resto de tu aplicación
+    # Todo lo demás va a la app core
     path('', include('core.urls')),
-
-    # 5. Ruta para crear juego
-    path('nuevo-juego/', views.crear_juego, name='crear_juego'),
 ]
