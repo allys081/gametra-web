@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Información del Juego -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">{{ juego.titulo }}</h2>
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ juego.descripcion }}</p>
+                    <hr>
+                    <small class="text-muted">Publicado por: {{ juego.creado_por.username }}</small>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 1: Mostrar Reseñas -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <h3 class="text-primary mb-4">Reseñas de la comunidad</h3>
+                    {% for resena in juego.resenas.all %}
+                        <div class="border-start border-primary border-4 ps-3 mb-4">
+                            <div class="d-flex justify-content-between">
+                                <strong>👤 {{ resena.usuario.username }}</strong>
+                                <small class="text-muted">{{ resena.creado_en|date:"d/m/Y" }}</small>
+                            </div>
+                            <p class="mt-2 mb-0">{{ resena.comentario }}</p>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-3">
+                            <p class="text-muted">Aún no hay reseñas. ¡Sé el primero en opinar!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: Formulario Exclusivo -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h4 class="mb-3">Deja tu opinión</h4>
+                    {% if user.is_authenticated %}
+                        <form method="POST" action="{% url 'dejar_resena' juego.id %}" id="resenaForm">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <textarea name="comentario" id="txtComentario" class="form-control" rows="3" placeholder="Escribe tu reseña aquí..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary fw-bold">Publicar Reseña</button>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-warning border-0 shadow-sm">
+                            <i class="bi bi-exclamation-triangle"></i> 
+                            Debes <a href="{% url 'login' %}" class="fw-bold">iniciar sesión</a> para dejar una reseña.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="{% url 'juegos' %}" class="btn btn-link text-decoration-none">← Volver al catálogo</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SECCIÓN 3: Requisito de JavaScript -->
+<script>
+    const form = document.getElementById('resenaForm');
+    if (form) {
+        form.onsubmit = function(e) {
+            let comentario = document.getElementById('txtComentario').value;
+            if (comentario.trim() === "") {
+                alert("¡No puedes dejar una reseña vacía!");
+                e.preventDefault(); // Detiene el envío
+            }
+        };
+    }
+</script>
+{% endblock %}
