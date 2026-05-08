@@ -1,10 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    /* Estilo para simular hilos de conversación (estilo Reddit) */
+    .reply-container {
+        border-left: 3px solid #dee2e6; /* Línea gris de conexión */
+        margin-left: 25px;
+        padding-left: 15px;
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+    .comment-box {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+    }
+</style>
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <!-- Información del Juego -->
+            
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-primary text-white">
                     <h2 class="mb-0">{{ juego.titulo }}</h2>
@@ -12,22 +28,37 @@
                 <div class="card-body">
                     <p class="lead">{{ juego.descripcion }}</p>
                     <hr>
-                    <small class="text-muted">Publicado por: {{ juego.creado_por.username }}</small>
+                    <small class="text-muted">Publicado por: <strong>{{ juego.creado_por.username }}</strong></small>
                 </div>
             </div>
 
-            <!-- SECCIÓN 1: Mostrar Reseñas -->
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body">
                     <h3 class="text-primary mb-4">Reseñas de la comunidad</h3>
+                    
                     {% for resena in juego.resenas.all %}
-                        <div class="border-start border-primary border-4 ps-3 mb-4">
-                            <div class="d-flex justify-content-between">
-                                <strong>👤 {{ resena.usuario.username }}</strong>
-                                <small class="text-muted">{{ resena.creado_en|date:"d/m/Y" }}</small>
+                        {% if not resena.parent %} <div class="mb-4">
+                                <div class="comment-box border shadow-sm">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>👤 {{ resena.usuario.username }}</strong>
+                                        <small class="text-muted">{{ resena.creado_en|date:"d/m/Y" }}</small>
+                                    </div>
+                                    <p class="mt-2 mb-0">{{ resena.comentario }}</p>
+                                </div>
+
+                                {% for respuesta in resena.replies.all %}
+                                    <div class="reply-container">
+                                        <div class="comment-box border-bottom bg-light">
+                                            <div class="d-flex justify-content-between">
+                                                <strong>👤 {{ respuesta.usuario.username }}</strong>
+                                                <small class="text-muted">{{ respuesta.creado_en|date:"d/m/Y" }}</small>
+                                            </div>
+                                            <p class="mt-1 mb-0">{{ respuesta.comentario }}</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
                             </div>
-                            <p class="mt-2 mb-0">{{ resena.comentario }}</p>
-                        </div>
+                        {% endif %}
                     {% empty %}
                         <div class="text-center py-3">
                             <p class="text-muted">Aún no hay reseñas. ¡Sé el primero en opinar!</p>
@@ -36,27 +67,6 @@
                 </div>
             </div>
 
-            <div class="mt-4">
-    <h4>Reseñas de la Comunidad</h4>
-    <hr>
-    
-    {% for r in resenas %}
-        <div class="card mb-3 shadow-sm">
-            <div class="card-body">
-                <h6 class="card-title fw-bold">
-                    👤 {{ r.usuario.username }} 
-                    <span class="badge bg-warning text-dark">{{ r.calificacion }} ⭐</span>
-                </h6>
-                <p class="card-text">{{ r.comentario }}</p>
-                <small class="text-muted">Publicado el: {{ r.fecha_creacion|date:"d/m/Y" }}</small>
-            </div>
-        </div>
-    {% empty %}
-        <p class="text-muted italic">Aún no hay reseñas para este juego. ¡Sé el primero en escribir una!</p>
-    {% endfor %}
-</div>
-
-            <!-- SECCIÓN 2: Formulario Exclusivo -->
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <h4 class="mb-3">Deja tu opinión</h4>
@@ -70,21 +80,20 @@
                         </form>
                     {% else %}
                         <div class="alert alert-warning border-0 shadow-sm">
-                            <i class="bi bi-exclamation-triangle"></i> 
                             Debes <a href="{% url 'login' %}" class="fw-bold">iniciar sesión</a> para dejar una reseña.
                         </div>
                     {% endif %}
                 </div>
             </div>
 
-            <div class="mt-4">
+            <div class="mt-4 mb-5">
                 <a href="{% url 'juegos' %}" class="btn btn-link text-decoration-none">← Volver al catálogo</a>
             </div>
+            
         </div>
     </div>
 </div>
 
-<!-- SECCIÓN 3: Requisito de JavaScript -->
 <script>
     const form = document.getElementById('resenaForm');
     if (form) {
@@ -92,7 +101,7 @@
             let comentario = document.getElementById('txtComentario').value;
             if (comentario.trim() === "") {
                 alert("¡No puedes dejar una reseña vacía!");
-                e.preventDefault(); // Detiene el envío
+                e.preventDefault(); 
             }
         };
     }
