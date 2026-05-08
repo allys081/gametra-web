@@ -18,7 +18,9 @@ class Reseña(models.Model):
         Juego, on_delete=models.CASCADE, related_name='resenas')
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     comentario = models.TextField()
-    calificacion = models.IntegerField()  # Ejemplo: 1 a 5
+    # Este campo permite que una reseña sea respuesta de otra
+    parent = models.ForeignKey(
+        'self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
     creado_en = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
