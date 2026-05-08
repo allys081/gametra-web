@@ -1,22 +1,42 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Perfil</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-    <h1>Perfil del Usuario</h1>
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white py-3">
+                <h4 class="mb-0">Mi Perfil de Usuario</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <div class="bg-light d-inline-block rounded-circle p-4 mb-2">
+                        <span class="display-4">👤</span>
+                    </div>
+                    <h3>{{ user.username }}</h3>
+                    <p class="text-muted">{{ user.email }}</p>
+                </div>
 
-    <nav>
-        <a href="/">Inicio</a>
-        <a href="/perfil/">Perfil</a>
-        <a href="/juegos/">Juegos</a>
-    </nav>
+                <hr>
 
-    <hr>
+                <div class="mt-4">
+                    <h5>Mis Actividades</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Juegos publicados
+                            <span class="badge bg-primary rounded-pill">0</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Reseñas escritas
+                            <span class="badge bg-primary rounded-pill">0</span>
+                        </li>
+                    </ul>
+                </div>
 
-    <p>Esta es la página del perfil.</p>
-
-</body>
-</html>
+                <div class="mt-4 d-grid">
+                    <a href="/" class="btn btn-outline-secondary">Volver al Inicio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

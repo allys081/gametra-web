@@ -1,22 +1,33 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Juegos</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-    <h1>Lista de Juegos</h1>
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h2 class="text-primary border-bottom pb-2">Catálogo de Juegos</h2>
+        <p class="text-muted">Explora los títulos disponibles en nuestra plataforma.</p>
+    </div>
 
-    <nav>
-        <a href="/">Inicio</a>
-        <a href="/perfil/">Perfil</a>
-        <a href="/juegos/">Juegos</a>
-    </nav>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title fw-bold">Nombre del Juego</h5>
+                <p class="card-text text-secondary">Esta es una breve descripción del juego y sus características principales.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-success">Público</span>
+                    <a href="#" class="btn btn-sm btn-outline-primary">Ver detalles</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <hr>
-
-    <p>Aquí aparecerán los juegos disponibles.</p>
-
-</body>
-</html>
+    {% if not user.is_authenticated %}
+    <div class="col-12 mt-4">
+        <div class="alert alert-warning text-center">
+            <h5>¿Quieres ver más?</h5>
+            <p>Los usuarios registrados pueden acceder a juegos exclusivos y dejar sus propias reseñas.</p>
+            <a href="/login/" class="btn btn-warning">Iniciar Sesión ahora</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

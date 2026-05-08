@@ -1,22 +1,44 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Gametra Web</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-    <h1>Gametra Web</h1>
+{% block content %}
+<div class="p-5 mb-4 bg-white rounded-3 shadow-sm border">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold text-primary">Explora el Universo Gametra</h1>
+        <p class="col-md-8 fs-4 text-secondary">
+            Bienvenido a tu nueva plataforma favorita para gestionar tus juegos, compartir experiencias y descubrir qué está jugando la comunidad.
+        </p>
+        
+        {% if not user.is_authenticated %}
+            <div class="mt-4">
+                <a href="/login/" class="btn btn-primary btn-lg px-4 me-md-2">Comenzar ahora</a>
+                <a href="/juegos/" class="btn btn-outline-secondary btn-lg px-4">Ver Catálogo Público</a>
+            </div>
+        {% else %}
+            <div class="alert alert-success d-inline-block mt-3" role="alert">
+                ¡Hola de nuevo, <strong>{{ user.username }}</strong>! Ya puedes publicar tus propios juegos.
+            </div>
+        {% endif %}
+    </div>
+</div>
 
-    <nav>
-        <a href="/">Inicio</a>
-        <a href="/perfil/">Perfil</a>
-        <a href="/juegos/">Juegos</a>
-    </nav>
-
-    <hr>
-
-    <p>Bienvenido al sistema web de Gametra.</p>
-
-</body>
-</html>
+<div class="row align-items-md-stretch">
+    <div class="col-md-6 mb-4">
+        <div class="h-100 p-5 text-white bg-dark rounded-3">
+            <h2>Publica tu Colección</h2>
+            <p>Sube tus juegos y decide quién puede verlos. ¿Quieres que sea público para todos o privado solo para la comunidad registrada? Tú tienes el control.</p>
+            <a href="/juegos/" class="btn btn-outline-light">Explorar</a>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="h-100 p-5 bg-light border rounded-3">
+            <h2>Comunidad y Reseñas</h2>
+            <p>Deja tu opinión sobre los títulos que has jugado. Interactúa con otros usuarios a través de comentarios y descubre nuevas recomendaciones.</p>
+            {% if not user.is_authenticated %}
+                <button class="btn btn-outline-primary" disabled>Regístrate para comentar</button>
+            {% else %}
+                <a href="/perfil/" class="btn btn-outline-primary">Ver mi actividad</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
