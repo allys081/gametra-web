@@ -36,6 +36,26 @@
                 </div>
             </div>
 
+            <div class="mt-4">
+    <h4>Reseñas de la Comunidad</h4>
+    <hr>
+    
+    {% for r in resenas %}
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title fw-bold">
+                    👤 {{ r.usuario.username }} 
+                    <span class="badge bg-warning text-dark">{{ r.calificacion }} ⭐</span>
+                </h6>
+                <p class="card-text">{{ r.comentario }}</p>
+                <small class="text-muted">Publicado el: {{ r.fecha_creacion|date:"d/m/Y" }}</small>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-muted italic">Aún no hay reseñas para este juego. ¡Sé el primero en escribir una!</p>
+    {% endfor %}
+</div>
+
             <!-- SECCIÓN 2: Formulario Exclusivo -->
             <div class="card shadow-sm border-0">
                 <div class="card-body">
