@@ -2,211 +2,278 @@
 
 {% block content %}
 <style>
-    body { background-color: #dae0e6; }
+    body { background-color: #f0edf6; }
 
+    /* Card del juego */
     .game-card {
-        background: #fff;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-        margin-bottom: 16px;
-        padding: 16px;
+        background: white;
+        border-radius: 20px;
+        padding: 28px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 12px rgba(111,66,193,0.08);
+        border-left: 5px solid #6f42c1;
     }
-
-    .comment-section {
-        background: #fff;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-        padding: 16px;
-        margin-bottom: 16px;
+    .game-title {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #1a1a2e;
+        margin-bottom: 8px;
     }
-
-    .comment {
-        display: flex;
-        gap: 8px;
+    .game-description {
+        color: #555;
+        font-size: 0.95rem;
+        line-height: 1.6;
         margin-bottom: 12px;
     }
+    .game-author {
+        font-size: 0.82rem;
+        color: #999;
+    }
+    .game-author strong { color: #6f42c1; }
 
+    /* Sección comentarios */
+    .comment-section {
+        background: white;
+        border-radius: 20px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 12px rgba(111,66,193,0.08);
+    }
+
+    /* Formulario nuevo comentario */
+    .comment-as {
+        font-size: 0.85rem;
+        color: #999;
+        margin-bottom: 10px;
+    }
+    .comment-as strong { color: #6f42c1; }
+
+    .new-comment-box {
+        border: 1.5px solid #e0d9f5;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .new-comment-box textarea {
+        width: 100%;
+        border: none;
+        padding: 14px;
+        font-size: 0.92rem;
+        resize: vertical;
+        min-height: 90px;
+        background: #faf8ff;
+        box-sizing: border-box;
+        display: block;
+        color: #333;
+    }
+    .new-comment-box textarea:focus {
+        outline: none;
+        background: #fff;
+    }
+    .new-comment-box .form-footer {
+        background: #f5f0ff;
+        padding: 8px 14px;
+        border-top: 1px solid #e0d9f5;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    /* Botones */
+    .btn-primary-gmt {
+        background: linear-gradient(135deg, #6f42c1, #4a90d9);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 8px 20px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-primary-gmt:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .btn-outline-gmt {
+        background: transparent;
+        color: #6f42c1;
+        border: 1.5px solid #6f42c1;
+        border-radius: 50px;
+        padding: 6px 16px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-outline-gmt:hover { background: #6f42c1; color: white; }
+
+    /* Sort bar */
+    .sort-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 20px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #aaa;
+        border-bottom: 1.5px solid #f0edf6;
+        padding-bottom: 12px;
+    }
+    .sort-bar span { color: #6f42c1; }
+
+    /* Comentario individual */
+    .comment {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
     .comment-left {
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 32px;
         flex-shrink: 0;
     }
-
     .avatar {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
-        background: #0079d3;
+        background: linear-gradient(135deg, #6f42c1, #4a90d9);
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
-        font-weight: bold;
+        font-size: 15px;
+        font-weight: 800;
         flex-shrink: 0;
     }
-
+    .avatar-reply {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4a90d9, #6f42c1);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
     .thread-line {
         width: 2px;
         flex-grow: 1;
-        background: #edeff1;
-        margin-top: 4px;
-        cursor: pointer;
+        background: #e0d9f5;
+        margin-top: 6px;
         border-radius: 2px;
-        min-height: 20px;
+        min-height: 16px;
+        cursor: pointer;
+        transition: background 0.2s;
     }
-    .thread-line:hover { background: #0079d3; }
+    .thread-line:hover { background: #6f42c1; }
 
     .comment-body { flex: 1; }
-
     .comment-meta {
-        font-size: 12px;
-        color: #878a8c;
+        font-size: 0.8rem;
+        color: #aaa;
         margin-bottom: 4px;
     }
-    .comment-meta strong { color: #1c1c1c; margin-right: 6px; }
-
+    .comment-meta strong { color: #1a1a2e; margin-right: 6px; }
     .comment-text {
-        font-size: 14px;
-        color: #1c1c1c;
-        margin-bottom: 6px;
-        line-height: 1.5;
-    }
-
-    .comment-actions {
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        font-size: 0.92rem;
+        color: #333;
+        line-height: 1.55;
         margin-bottom: 8px;
     }
     .comment-actions button {
         background: none;
         border: none;
         cursor: pointer;
-        color: #878a8c;
-        font-size: 12px;
+        color: #aaa;
+        font-size: 0.78rem;
         font-weight: 700;
-        padding: 4px 6px;
-        border-radius: 2px;
+        padding: 3px 8px;
+        border-radius: 20px;
+        transition: all 0.15s;
     }
-    .comment-actions button:hover { background: #edeff1; color: #1c1c1c; }
+    .comment-actions button:hover {
+        background: #f0edf6;
+        color: #6f42c1;
+    }
 
-    .replies { margin-left: 16px; margin-top: 8px; }
+    /* Respuestas anidadas */
+    .replies {
+        margin-left: 20px;
+        margin-top: 10px;
+        border-left: 2px solid #e0d9f5;
+        padding-left: 14px;
+    }
 
-    .reply-form-area { display: none; margin: 8px 0; }
+    /* Formulario respuesta */
+    .reply-form-area { display: none; margin: 10px 0; }
     .reply-form-area.active { display: block; }
-
     .reply-textarea {
         width: 100%;
-        border: 1px solid #edeff1;
-        border-radius: 4px;
-        padding: 8px;
-        font-size: 14px;
-        resize: vertical;
-        min-height: 60px;
-        background: #f6f7f8;
-        box-sizing: border-box;
-    }
-    .reply-textarea:focus { outline: none; border-color: #0079d3; background: #fff; }
-
-    .new-comment-box {
-        border: 1px solid #edeff1;
-        border-radius: 4px;
-        overflow: hidden;
-        margin-bottom: 8px;
-    }
-    .new-comment-box textarea {
-        width: 100%;
-        border: none;
+        border: 1.5px solid #e0d9f5;
+        border-radius: 10px;
         padding: 10px;
-        font-size: 14px;
+        font-size: 0.88rem;
         resize: vertical;
-        min-height: 80px;
-        background: #f6f7f8;
+        min-height: 65px;
+        background: #faf8ff;
         box-sizing: border-box;
-        display: block;
+        color: #333;
+        transition: border-color 0.2s;
     }
-    .new-comment-box textarea:focus { outline: none; background: #fff; }
-    .new-comment-box .form-footer {
-        background: #f6f7f8;
-        padding: 6px 10px;
-        border-top: 1px solid #edeff1;
-        display: flex;
-        justify-content: flex-end;
-    }
-
-    .btn-reddit {
-        background: #ff4500;
-        color: white;
-        border: none;
-        border-radius: 20px;
-        padding: 6px 16px;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-    }
-    .btn-reddit:hover { background: #e03d00; }
-
-    .btn-reddit-outline {
-        background: transparent;
-        color: #0079d3;
-        border: 1px solid #0079d3;
-        border-radius: 20px;
-        padding: 4px 12px;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-    }
-    .btn-reddit-outline:hover { background: #e8f0fe; }
-
-    .sort-bar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 16px;
-        font-size: 14px;
-        font-weight: 700;
-        color: #878a8c;
-    }
-    .sort-bar span { color: #0079d3; }
-
-    .locked-box {
+    .reply-textarea:focus {
+        outline: none;
+        border-color: #6f42c1;
         background: #fff;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        padding: 16px;
-        text-align: center;
-        color: #878a8c;
-        font-size: 14px;
-        margin-bottom: 16px;
     }
-    .locked-box a { color: #0079d3; font-weight: 700; text-decoration: none; }
+
+    /* Locked box */
+    .locked-box {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+        color: #aaa;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 12px rgba(111,66,193,0.08);
+    }
+    .locked-box a {
+        color: #6f42c1;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    /* Empty state */
+    .empty-comments {
+        text-align: center;
+        padding: 40px 20px;
+        color: #bbb;
+        font-size: 0.9rem;
+    }
+    .empty-comments span { font-size: 2.5rem; display: block; margin-bottom: 10px; }
 </style>
 
-<div class="container py-3" style="max-width: 740px;">
+<div class="container py-4" style="max-width: 720px;">
 
     <!-- Detalle del juego -->
     <div class="game-card">
-        <h4 style="color:#1c1c1c; margin-bottom:6px;">{{ juego.titulo }}</h4>
-        <p style="color:#3c3c3c; font-size:14px; margin-bottom:8px;">{{ juego.descripcion }}</p>
-        <small style="color:#878a8c;">Publicado por <strong>{{ juego.creado_por.username }}</strong></small>
+        <div class="game-title">🎮 {{ juego.titulo }}</div>
+        <p class="game-description">{{ juego.descripcion }}</p>
+        <div class="game-author">Publicado por <strong>{{ juego.creado_por.username }}</strong></div>
     </div>
 
-    <!-- Formulario nueva reseña -->
+    <!-- Formulario nuevo comentario -->
     {% if user.is_authenticated %}
-    <div class="comment-section" style="padding-bottom:8px;">
-        <p style="font-size:13px; color:#878a8c; margin-bottom:8px;">
-            Comentando como <strong style="color:#0079d3;">{{ user.username }}</strong>
-        </p>
+    <div class="comment-section">
+        <div class="comment-as">Comentando como <strong>{{ user.username }}</strong></div>
         <form method="POST" action="{% url 'dejar_resena' juego.id %}" id="resenaForm">
             {% csrf_token %}
             <div class="new-comment-box">
                 <textarea name="comentario" id="txtComentario"
                           placeholder="¿Qué piensas sobre este juego?"></textarea>
                 <div class="form-footer">
-                    <button type="submit" class="btn-reddit">Comentar</button>
+                    <button type="submit" class="btn-primary-gmt">💬 Comentar</button>
                 </div>
             </div>
         </form>
@@ -217,7 +284,7 @@
     </div>
     {% endif %}
 
-    <!-- Sección de reseñas -->
+    <!-- Reseñas -->
     {% if user.is_authenticated %}
     <div class="comment-section">
         <div class="sort-bar">💬 <span>Mejores</span> comentarios</div>
@@ -236,30 +303,31 @@
                     </div>
                     <div class="comment-text">{{ resena.comentario }}</div>
                     <div class="comment-actions">
-                        <button onclick="toggleReplyForm('reply-form-{{ resena.id }}')">💬 Responder</button>
+                        <button onclick="toggleReplyForm('reply-form-{{ resena.id }}')">↩️ Responder</button>
                     </div>
 
-                    <!-- Formulario de respuesta -->
+                    <!-- Formulario respuesta -->
                     <div id="reply-form-{{ resena.id }}" class="reply-form-area">
                         <form method="POST" action="{% url 'dejar_resena' juego.id %}">
                             {% csrf_token %}
                             <input type="hidden" name="parent_id" value="{{ resena.id }}">
                             <textarea name="comentario" class="reply-textarea"
                                       placeholder="Escribe tu respuesta..." required></textarea>
-                            <div style="margin-top:6px; display:flex; gap:8px;">
-                                <button type="submit" class="btn-reddit" style="font-size:12px; padding:4px 14px;">Responder</button>
-                                <button type="button" class="btn-reddit-outline"
+                            <div style="margin-top:8px; display:flex; gap:8px;">
+                                <button type="submit" class="btn-primary-gmt" style="padding:6px 16px; font-size:0.82rem;">Responder</button>
+                                <button type="button" class="btn-outline-gmt"
                                         onclick="toggleReplyForm('reply-form-{{ resena.id }}')">Cancelar</button>
                             </div>
                         </form>
                     </div>
 
                     <!-- Respuestas anidadas -->
+                    {% if resena.replies.all %}
                     <div class="replies">
                         {% for respuesta in resena.replies.all %}
-                        <div class="comment">
+                        <div class="comment" style="margin-bottom:10px;">
                             <div class="comment-left">
-                                <div class="avatar" style="background:#ff4500;">{{ respuesta.usuario.username|first|upper }}</div>
+                                <div class="avatar-reply">{{ respuesta.usuario.username|first|upper }}</div>
                             </div>
                             <div class="comment-body">
                                 <div class="comment-meta">
@@ -271,12 +339,14 @@
                         </div>
                         {% endfor %}
                     </div>
+                    {% endif %}
 
                 </div>
             </div>
             {% endfor %}
         {% else %}
-            <div style="text-align:center; padding:32px; color:#878a8c; font-size:14px;">
+            <div class="empty-comments">
+                <span>💭</span>
                 Aún no hay comentarios. ¡Sé el primero en opinar!
             </div>
         {% endif %}
@@ -284,7 +354,7 @@
     {% endif %}
 
     <div class="mb-4">
-        <a href="{% url 'juegos' %}" style="color:#0079d3; font-size:14px; text-decoration:none;">← Volver al catálogo</a>
+        <a href="{% url 'juegos' %}" class="btn-outline-gmt" style="text-decoration:none;">← Volver al catálogo</a>
     </div>
 
 </div>
