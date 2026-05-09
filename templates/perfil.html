@@ -19,22 +19,22 @@
                 <hr>
 
                 <div class="mt-4">
-                    <h5>Mis Actividades</h5>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Juegos publicados
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-    Juegos publicados
-    <span class="badge bg-primary rounded-pill">{{ juegos_count }}</span>
-</li>
-<li class="list-group-item d-flex justify-content-between align-items-center">
-    Reseñas escritas
-    <span class="badge bg-primary rounded-pill">{{ resenas_count }}</span>
-</li>
+    <h5>Mis Actividades</h5>
+    <ul class="list-group list-group-flush">
+        <!-- Ítem: Juegos -->
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            Juegos publicados
+            <span class="badge bg-primary rounded-pill">{{ juegos_count }}</span>
+        </li>
+        
+        <!-- Ítem: Reseñas -->
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            Reseñas escritas
+            <span class="badge bg-primary rounded-pill">{{ resenas_count }}</span>
+        </li>
+    </ul>
+</div>
 
-                        </li>
-                    </ul>
-                </div>
 
                 <div class="mt-4 d-grid">
                     <a href="/" class="btn btn-outline-secondary">Volver al Inicio</a>
