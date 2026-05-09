@@ -22,7 +22,12 @@ def juegos(request):
 
 @login_required  # Esto protege el área privada
 def perfil(request):
-    return render(request, 'perfil.html')
+    juegos_count = Juego.objects.filter(creado_por=request.user).count()
+    resenas_count = Reseña.objects.filter(usuario=request.user).count()
+    return render(request, 'perfil.html', {
+        'juegos_count': juegos_count,
+        'resenas_count': resenas_count,
+    })
 
 
 def registro(request):
@@ -94,7 +99,10 @@ def detalle_juego(request, juego_id):
     if request.user.is_authenticated:
         resenas = Reseña.objects.filter(
             juego=juego,
-            parent=None                                    # solo reseñas raíz
+            parent=None
         ).prefetch_related('replies__usuario').select_related('usuario').order_by('-creado_en')
+
+        # ← agrega esto
+        print(f"DEBUG - Reseñas encontradas: {resenas.count()}")
 
     return render(request, 'detalle_juego.html', {'juego': juego, 'resenas': resenas})
