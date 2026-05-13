@@ -201,12 +201,9 @@
             </div>
 
             <div class="game-card-body">
-                {% if user.is_authenticated %}
-                    <p class="game-description">{{ juego.descripcion }}</p>
-                {% else %}
-                    <p class="game-description-locked">🔒 Inicia sesión para ver la descripción completa.</p>
-                {% endif %}
-            </div>
+    <p class="game-description">{{ juego.descripcion }}</p>
+</div>
+
 
             <div class="game-card-footer">
                 <span>Agregado por: <strong>{{ juego.creado_por.username }}</strong></span>
