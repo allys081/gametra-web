@@ -34,7 +34,6 @@
         box-shadow: 0 6px 20px rgba(111,66,193,0.3);
     }
 
-    /* Card de juego */
     .game-card {
         border-radius: 16px;
         border: none;
@@ -102,8 +101,66 @@
         border-top: 1px solid #f0f0f0;
         font-size: 0.82rem;
         color: #999;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
     .game-card-footer strong { color: #6f42c1; }
+
+    /* Panel de reseñas expandible */
+    .reviews-panel {
+        display: none;
+        background: #f8f5ff;
+        border-top: 1px solid #e0d9f5;
+        padding: 16px 20px;
+    }
+    .reviews-panel.active { display: block; }
+
+    .btn-ver-resenas {
+        background: none;
+        border: none;
+        color: #6f42c1;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 0;
+        transition: color 0.2s;
+    }
+    .btn-ver-resenas:hover { color: #4a90d9; }
+
+    .mini-resena {
+        border-left: 3px solid #6f42c1;
+        padding: 8px 12px;
+        margin-bottom: 10px;
+        background: white;
+        border-radius: 0 8px 8px 0;
+        box-shadow: 0 1px 4px rgba(111,66,193,0.06);
+    }
+    .mini-resena-autor {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #6f42c1;
+        margin-bottom: 2px;
+    }
+    .mini-resena-texto {
+        font-size: 0.85rem;
+        color: #444;
+        line-height: 1.4;
+    }
+    .mini-resena-vacia {
+        font-size: 0.82rem;
+        color: #bbb;
+        text-align: center;
+        padding: 10px 0;
+    }
+    .resenas-count {
+        background: #6f42c1;
+        color: white;
+        border-radius: 50px;
+        padding: 1px 7px;
+        font-size: 0.72rem;
+        margin-left: 4px;
+    }
 
     /* Empty state */
     .empty-state {
@@ -147,6 +204,7 @@
     {% for juego in juegos %}
     <div class="col-md-4">
         <div class="game-card d-flex flex-column">
+
             <div class="game-card-header">
                 <a href="{% url 'detalle_juego' juego.id %}" class="game-card-title">{{ juego.titulo }}</a>
                 {% if juego.es_publico %}
@@ -155,6 +213,7 @@
                     <span class="badge-privado">🔒 Privado</span>
                 {% endif %}
             </div>
+
             <div class="game-card-body">
                 {% if user.is_authenticated %}
                     <p class="game-description">{{ juego.descripcion }}</p>
@@ -162,9 +221,38 @@
                     <p class="game-description-locked">🔒 Inicia sesión para ver la descripción completa.</p>
                 {% endif %}
             </div>
+
             <div class="game-card-footer">
-                Agregado por: <strong>{{ juego.creado_por.username }}</strong>
+                <span>Agregado por: <strong>{{ juego.creado_por.username }}</strong></span>
+                <button class="btn-ver-resenas"
+                        data-count="{{ juego.resenas.count }}"
+                        onclick="toggleResenas('resenas-{{ juego.id }}', this)">
+                    💬 Ver reseñas <span class="resenas-count">{{ juego.resenas.count }}</span>
+                </button>
             </div>
+
+            <!-- Panel expandible de reseñas -->
+            <div id="resenas-{{ juego.id }}" class="reviews-panel">
+                {% with resenas=juego.resenas.all %}
+                {% if resenas %}
+                    {% for resena in resenas %}
+                    {% if not resena.parent %}
+                    <div class="mini-resena">
+                        <div class="mini-resena-autor">👤 {{ resena.usuario.username }}</div>
+                        <div class="mini-resena-texto">{{ resena.comentario|truncatechars:100 }}</div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    <a href="{% url 'detalle_juego' juego.id %}"
+                       style="font-size:0.8rem; color:#6f42c1; font-weight:700; text-decoration:none;">
+                        Ver todas →
+                    </a>
+                {% else %}
+                    <div class="mini-resena-vacia">💭 Sin reseñas aún</div>
+                {% endif %}
+                {% endwith %}
+            </div>
+
         </div>
     </div>
     {% empty %}
@@ -180,5 +268,18 @@
     </div>
     {% endfor %}
 </div>
+
+<script>
+    function toggleResenas(id, btn) {
+        const panel = document.getElementById(id);
+        const count = btn.dataset.count;
+        panel.classList.toggle('active');
+        if (panel.classList.contains('active')) {
+            btn.innerHTML = '✕ Cerrar';
+        } else {
+            btn.innerHTML = '💬 Ver reseñas <span class="resenas-count">' + count + '</span>';
+        }
+    }
+</script>
 
 {% endblock %}
