@@ -66,8 +66,6 @@ def crear_juego(request):
     return render(request, 'crear_juego.html')
 
 
-# ✅ CÓDIGO CORRECTO
-
 @login_required
 def dejar_resena(request, juego_id):
     if request.method == 'POST':
