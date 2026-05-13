@@ -92,17 +92,14 @@ def dejar_resena(request, juego_id):
     return redirect('detalle_juego', juego_id=juego_id)
 
 
+# DESPUÉS
 def detalle_juego(request, juego_id):
     juego = get_object_or_404(Juego, id=juego_id)
-    resenas = None
 
-    if request.user.is_authenticated:
-        resenas = Reseña.objects.filter(
-            juego=juego,
-            parent=None
-        ).prefetch_related('replies__usuario').select_related('usuario').order_by('-creado_en')
-
-        # ← agrega esto
-        print(f"DEBUG - Reseñas encontradas: {resenas.count()}")
+    # Todos ven las reseñas, logueados o no
+    resenas = Reseña.objects.filter(
+        juego=juego,
+        parent=None
+    ).prefetch_related('replies__usuario').select_related('usuario').order_by('-creado_en')
 
     return render(request, 'detalle_juego.html', {'juego': juego, 'resenas': resenas})
