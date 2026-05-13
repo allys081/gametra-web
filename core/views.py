@@ -101,3 +101,35 @@ def detalle_juego(request, juego_id):
     ).prefetch_related('replies__usuario').select_related('usuario').order_by('-creado_en')
 
     return render(request, 'detalle_juego.html', {'juego': juego, 'resenas': resenas})
+
+
+@login_required
+def eliminar_juego(request, juego_id):
+    juego = get_object_or_404(Juego, id=juego_id, creado_por=request.user)
+    if request.method == 'POST':
+        titulo = juego.titulo
+        juego.delete()
+        messages.success(request, f'El juego "{titulo}" fue eliminado.')
+        return redirect('juegos')
+    return render(request, 'confirmar_eliminar.html', {
+        'objeto': juego.titulo,
+        'tipo': 'juego',
+        'cancel_url': '/juegos/'
+    })
+
+
+@login_required
+def eliminar_resena(request, resena_id):
+    resena = get_object_or_404(Reseña, id=resena_id, usuario=request.user)
+    juego_id = resena.juego.id
+    texto_corto = resena.comentario[:60] + \
+        '...' if len(resena.comentario) > 60 else resena.comentario
+    if request.method == 'POST':
+        resena.delete()
+        messages.success(request, 'Tu comentario fue eliminado.')
+        return redirect('detalle_juego', juego_id=juego_id)
+    return render(request, 'confirmar_eliminar.html', {
+        'objeto': texto_corto,
+        'tipo': 'comentario',
+        'cancel_url': f'/juego/{juego_id}/'
+    })
