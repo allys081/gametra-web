@@ -284,74 +284,74 @@
     </div>
     {% endif %}
 
-    <!-- Reseñas -->
-    {% if user.is_authenticated %}
     <div class="comment-section">
-        <div class="sort-bar">💬 <span>Mejores</span> comentarios</div>
+    <div class="sort-bar">💬 <span>Mejores</span> comentarios</div>
 
-        {% if resenas %}
-            {% for resena in resenas %}
-            <div class="comment">
-                <div class="comment-left">
-                    <div class="avatar">{{ resena.usuario.username|first|upper }}</div>
-                    <div class="thread-line"></div>
+    {% if resenas %}
+        {% for resena in resenas %}
+        <div class="comment">
+            <div class="comment-left">
+                <div class="avatar">{{ resena.usuario.username|first|upper }}</div>
+                <div class="thread-line"></div>
+            </div>
+            <div class="comment-body">
+                <div class="comment-meta">
+                    <strong>{{ resena.usuario.username }}</strong>
+                    {{ resena.creado_en|date:"d/m/Y" }}
                 </div>
-                <div class="comment-body">
-                    <div class="comment-meta">
-                        <strong>{{ resena.usuario.username }}</strong>
-                        {{ resena.creado_en|date:"d/m/Y" }}
-                    </div>
-                    <div class="comment-text">{{ resena.comentario }}</div>
-                    <div class="comment-actions">
-                        <button onclick="toggleReplyForm('reply-form-{{ resena.id }}')">↩️ Responder</button>
-                    </div>
+                <div class="comment-text">{{ resena.comentario }}</div>
 
-                    <!-- Formulario respuesta -->
-                    <div id="reply-form-{{ resena.id }}" class="reply-form-area">
-                        <form method="POST" action="{% url 'dejar_resena' juego.id %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="parent_id" value="{{ resena.id }}">
-                            <textarea name="comentario" class="reply-textarea"
-                                      placeholder="Escribe tu respuesta..." required></textarea>
-                            <div style="margin-top:8px; display:flex; gap:8px;">
-                                <button type="submit" class="btn-primary-gmt" style="padding:6px 16px; font-size:0.82rem;">Responder</button>
-                                <button type="button" class="btn-outline-gmt"
-                                        onclick="toggleReplyForm('reply-form-{{ resena.id }}')">Cancelar</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Respuestas anidadas -->
-                    {% if resena.replies.all %}
-                    <div class="replies">
-                        {% for respuesta in resena.replies.all %}
-                        <div class="comment" style="margin-bottom:10px;">
-                            <div class="comment-left">
-                                <div class="avatar-reply">{{ respuesta.usuario.username|first|upper }}</div>
-                            </div>
-                            <div class="comment-body">
-                                <div class="comment-meta">
-                                    <strong>{{ respuesta.usuario.username }}</strong>
-                                    {{ respuesta.creado_en|date:"d/m/Y" }}
-                                </div>
-                                <div class="comment-text">{{ respuesta.comentario }}</div>
-                            </div>
+                <!-- Botón responder: solo logueados -->
+                {% if user.is_authenticated %}
+                <div class="comment-actions">
+                    <button onclick="toggleReplyForm('reply-form-{{ resena.id }}')">↩ Responder</button>
+                </div>
+                <div id="reply-form-{{ resena.id }}" class="reply-form-area">
+                    <form method="POST" action="{% url 'dejar_resena' juego.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="parent_id" value="{{ resena.id }}">
+                        <textarea name="comentario" class="reply-textarea"
+                                  placeholder="Escribe tu respuesta..." required></textarea>
+                        <div style="margin-top:8px; display:flex; gap:8px;">
+                            <button type="submit" class="btn-primary-gmt" style="padding:6px 16px; font-size:0.82rem;">Responder</button>
+                            <button type="button" class="btn-outline-gmt"
+                                    onclick="toggleReplyForm('reply-form-{{ resena.id }}')">Cancelar</button>
                         </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-
+                    </form>
                 </div>
+                {% endif %}
+
+                <!-- Respuestas anidadas: visibles para todos -->
+                {% if resena.replies.all %}
+                <div class="replies">
+                    {% for respuesta in resena.replies.all %}
+                    <div class="comment" style="margin-bottom:10px;">
+                        <div class="comment-left">
+                            <div class="avatar-reply">{{ respuesta.usuario.username|first|upper }}</div>
+                        </div>
+                        <div class="comment-body">
+                            <div class="comment-meta">
+                                <strong>{{ respuesta.usuario.username }}</strong>
+                                {{ respuesta.creado_en|date:"d/m/Y" }}
+                            </div>
+                            <div class="comment-text">{{ respuesta.comentario }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
             </div>
-            {% endfor %}
-        {% else %}
-            <div class="empty-comments">
-                <span>💭</span>
-                Aún no hay comentarios. ¡Sé el primero en opinar!
-            </div>
-        {% endif %}
-    </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-comments">
+            <span>💭</span>
+            Aún no hay comentarios. ¡Sé el primero en opinar!
+        </div>
     {% endif %}
+</div>
+
 
     <div class="mb-4">
         <a href="{% url 'juegos' %}" class="btn-outline-gmt" style="text-decoration:none;">← Volver al catálogo</a>
