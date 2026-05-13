@@ -2,19 +2,15 @@
 {% block content %}
 
 <style>
-    .catalog-header {
-        margin-bottom: 28px;
-    }
+    .catalog-header { margin-bottom: 28px; }
     .catalog-title {
         font-size: 2rem;
         font-weight: 800;
         color: #6f42c1;
         margin-bottom: 4px;
     }
-    .catalog-subtitle {
-        color: #888;
-        font-size: 0.95rem;
-    }
+    .catalog-subtitle { color: #888; font-size: 0.95rem; }
+
     .btn-add-game {
         background: linear-gradient(135deg, #6f42c1, #4a90d9);
         color: white;
@@ -85,16 +81,9 @@
         background: white;
         flex: 1;
     }
-    .game-description {
-        color: #444;
-        font-size: 0.9rem;
-        line-height: 1.5;
-    }
-    .game-description-locked {
-        color: #aaa;
-        font-size: 0.88rem;
-        font-style: italic;
-    }
+    .game-description { color: #444; font-size: 0.9rem; line-height: 1.5; }
+    .game-description-locked { color: #aaa; font-size: 0.88rem; font-style: italic; }
+
     .game-card-footer {
         padding: 12px 20px;
         background: #fafafa;
@@ -107,15 +96,6 @@
     }
     .game-card-footer strong { color: #6f42c1; }
 
-    /* Panel de reseñas expandible */
-    .reviews-panel {
-        display: none;
-        background: #f8f5ff;
-        border-top: 1px solid #e0d9f5;
-        padding: 16px 20px;
-    }
-    .reviews-panel.active { display: block; }
-
     .btn-ver-resenas {
         background: none;
         border: none;
@@ -127,6 +107,23 @@
         transition: color 0.2s;
     }
     .btn-ver-resenas:hover { color: #4a90d9; }
+
+    .resenas-count {
+        background: #6f42c1;
+        color: white;
+        border-radius: 50px;
+        padding: 1px 7px;
+        font-size: 0.72rem;
+        margin-left: 4px;
+    }
+
+    .reviews-panel {
+        display: none;
+        background: #f8f5ff;
+        border-top: 1px solid #e0d9f5;
+        padding: 16px 20px;
+    }
+    .reviews-panel.active { display: block; }
 
     .mini-resena {
         border-left: 3px solid #6f42c1;
@@ -142,27 +139,20 @@
         color: #6f42c1;
         margin-bottom: 2px;
     }
-    .mini-resena-texto {
-        font-size: 0.85rem;
-        color: #444;
-        line-height: 1.4;
-    }
-    .mini-resena-vacia {
-        font-size: 0.82rem;
-        color: #bbb;
-        text-align: center;
-        padding: 10px 0;
-    }
-    .resenas-count {
-        background: #6f42c1;
-        color: white;
-        border-radius: 50px;
-        padding: 1px 7px;
-        font-size: 0.72rem;
-        margin-left: 4px;
-    }
+    .mini-resena-texto { font-size: 0.85rem; color: #444; line-height: 1.4; }
+    .mini-resena-vacia { font-size: 0.82rem; color: #bbb; text-align: center; padding: 10px 0; }
 
-    /* Empty state */
+    .btn-eliminar-juego {
+        color: #e53935;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.15s;
+        padding: 3px 8px;
+        border-radius: 20px;
+    }
+    .btn-eliminar-juego:hover { background: #fff0f0; color: #c62828; }
+
     .empty-state {
         text-align: center;
         padding: 60px 20px;
@@ -170,11 +160,7 @@
         border-radius: 20px;
         box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     }
-    .empty-icon {
-        font-size: 4rem;
-        margin-bottom: 16px;
-        display: block;
-    }
+    .empty-icon { font-size: 4rem; margin-bottom: 16px; display: block; }
     .btn-empty {
         background: linear-gradient(135deg, #6f42c1, #4a90d9);
         color: white;
@@ -224,11 +210,16 @@
 
             <div class="game-card-footer">
                 <span>Agregado por: <strong>{{ juego.creado_por.username }}</strong></span>
-                <button class="btn-ver-resenas"
-                        data-count="{{ juego.resenas.count }}"
-                        onclick="toggleResenas('resenas-{{ juego.id }}', this)">
-                    💬 Ver reseñas <span class="resenas-count">{{ juego.resenas.count }}</span>
-                </button>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    {% if user == juego.creado_por %}
+                    <a href="{% url 'eliminar_juego' juego.id %}" class="btn-eliminar-juego">🗑 Eliminar</a>
+                    {% endif %}
+                    <button class="btn-ver-resenas"
+                            data-count="{{ juego.resenas.count }}"
+                            onclick="toggleResenas('resenas-{{ juego.id }}', this)">
+                        💬 Ver reseñas <span class="resenas-count">{{ juego.resenas.count }}</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Panel expandible de reseñas -->

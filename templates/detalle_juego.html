@@ -4,7 +4,6 @@
 <style>
     body { background-color: #f0edf6; }
 
-    /* Card del juego */
     .game-card {
         background: white;
         border-radius: 20px;
@@ -31,7 +30,6 @@
     }
     .game-author strong { color: #6f42c1; }
 
-    /* Sección comentarios */
     .comment-section {
         background: white;
         border-radius: 20px;
@@ -40,7 +38,6 @@
         box-shadow: 0 2px 12px rgba(111,66,193,0.08);
     }
 
-    /* Formulario nuevo comentario */
     .comment-as {
         font-size: 0.85rem;
         color: #999;
@@ -65,10 +62,7 @@
         display: block;
         color: #333;
     }
-    .new-comment-box textarea:focus {
-        outline: none;
-        background: #fff;
-    }
+    .new-comment-box textarea:focus { outline: none; background: #fff; }
     .new-comment-box .form-footer {
         background: #f5f0ff;
         padding: 8px 14px;
@@ -77,7 +71,6 @@
         justify-content: flex-end;
     }
 
-    /* Botones */
     .btn-primary-gmt {
         background: linear-gradient(135deg, #6f42c1, #4a90d9);
         color: white;
@@ -104,7 +97,6 @@
     }
     .btn-outline-gmt:hover { background: #6f42c1; color: white; }
 
-    /* Sort bar */
     .sort-bar {
         display: flex;
         align-items: center;
@@ -118,7 +110,6 @@
     }
     .sort-bar span { color: #6f42c1; }
 
-    /* Comentario individual */
     .comment {
         display: flex;
         gap: 12px;
@@ -163,7 +154,6 @@
         margin-top: 6px;
         border-radius: 2px;
         min-height: 16px;
-        cursor: pointer;
         transition: background 0.2s;
     }
     .thread-line:hover { background: #6f42c1; }
@@ -181,6 +171,12 @@
         line-height: 1.55;
         margin-bottom: 8px;
     }
+    .comment-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
     .comment-actions button {
         background: none;
         border: none;
@@ -192,12 +188,18 @@
         border-radius: 20px;
         transition: all 0.15s;
     }
-    .comment-actions button:hover {
-        background: #f0edf6;
-        color: #6f42c1;
+    .comment-actions button:hover { background: #f0edf6; color: #6f42c1; }
+    .btn-eliminar {
+        color: #e53935;
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: all 0.15s;
     }
+    .btn-eliminar:hover { background: #fff0f0; color: #c62828; }
 
-    /* Respuestas anidadas */
     .replies {
         margin-left: 20px;
         margin-top: 10px;
@@ -205,7 +207,6 @@
         padding-left: 14px;
     }
 
-    /* Formulario respuesta */
     .reply-form-area { display: none; margin: 10px 0; }
     .reply-form-area.active { display: block; }
     .reply-textarea {
@@ -221,13 +222,8 @@
         color: #333;
         transition: border-color 0.2s;
     }
-    .reply-textarea:focus {
-        outline: none;
-        border-color: #6f42c1;
-        background: #fff;
-    }
+    .reply-textarea:focus { outline: none; border-color: #6f42c1; background: #fff; }
 
-    /* Locked box */
     .locked-box {
         background: white;
         border-radius: 16px;
@@ -238,13 +234,8 @@
         margin-bottom: 20px;
         box-shadow: 0 2px 12px rgba(111,66,193,0.08);
     }
-    .locked-box a {
-        color: #6f42c1;
-        font-weight: 700;
-        text-decoration: none;
-    }
+    .locked-box a { color: #6f42c1; font-weight: 700; text-decoration: none; }
 
-    /* Empty state */
     .empty-comments {
         text-align: center;
         padding: 40px 20px;
@@ -263,7 +254,7 @@
         <div class="game-author">Publicado por <strong>{{ juego.creado_por.username }}</strong></div>
     </div>
 
-    <!-- Formulario nuevo comentario -->
+    <!-- Formulario nuevo comentario: solo logueados -->
     {% if user.is_authenticated %}
     <div class="comment-section">
         <div class="comment-as">Comentando como <strong>{{ user.username }}</strong></div>
@@ -280,78 +271,88 @@
     </div>
     {% else %}
     <div class="locked-box">
-        🔒 <a href="{% url 'login' %}">Inicia sesión</a> para comentar y ver las reseñas de la comunidad.
+        🔒 <a href="{% url 'login' %}">Inicia sesión</a> para dejar un comentario.
     </div>
     {% endif %}
 
+    <!-- Reseñas: visibles para todos -->
     <div class="comment-section">
-    <div class="sort-bar">💬 <span>Mejores</span> comentarios</div>
+        <div class="sort-bar">💬 <span>Mejores</span> comentarios</div>
 
-    {% if resenas %}
-        {% for resena in resenas %}
-        <div class="comment">
-            <div class="comment-left">
-                <div class="avatar">{{ resena.usuario.username|first|upper }}</div>
-                <div class="thread-line"></div>
-            </div>
-            <div class="comment-body">
-                <div class="comment-meta">
-                    <strong>{{ resena.usuario.username }}</strong>
-                    {{ resena.creado_en|date:"d/m/Y" }}
+        {% if resenas %}
+            {% for resena in resenas %}
+            <div class="comment">
+                <div class="comment-left">
+                    <div class="avatar">{{ resena.usuario.username|first|upper }}</div>
+                    <div class="thread-line"></div>
                 </div>
-                <div class="comment-text">{{ resena.comentario }}</div>
-
-                <!-- Botón responder: solo logueados -->
-                {% if user.is_authenticated %}
-                <div class="comment-actions">
-                    <button onclick="toggleReplyForm('reply-form-{{ resena.id }}')">↩ Responder</button>
-                </div>
-                <div id="reply-form-{{ resena.id }}" class="reply-form-area">
-                    <form method="POST" action="{% url 'dejar_resena' juego.id %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="parent_id" value="{{ resena.id }}">
-                        <textarea name="comentario" class="reply-textarea"
-                                  placeholder="Escribe tu respuesta..." required></textarea>
-                        <div style="margin-top:8px; display:flex; gap:8px;">
-                            <button type="submit" class="btn-primary-gmt" style="padding:6px 16px; font-size:0.82rem;">Responder</button>
-                            <button type="button" class="btn-outline-gmt"
-                                    onclick="toggleReplyForm('reply-form-{{ resena.id }}')">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-                {% endif %}
-
-                <!-- Respuestas anidadas: visibles para todos -->
-                {% if resena.replies.all %}
-                <div class="replies">
-                    {% for respuesta in resena.replies.all %}
-                    <div class="comment" style="margin-bottom:10px;">
-                        <div class="comment-left">
-                            <div class="avatar-reply">{{ respuesta.usuario.username|first|upper }}</div>
-                        </div>
-                        <div class="comment-body">
-                            <div class="comment-meta">
-                                <strong>{{ respuesta.usuario.username }}</strong>
-                                {{ respuesta.creado_en|date:"d/m/Y" }}
-                            </div>
-                            <div class="comment-text">{{ respuesta.comentario }}</div>
-                        </div>
+                <div class="comment-body">
+                    <div class="comment-meta">
+                        <strong>{{ resena.usuario.username }}</strong>
+                        {{ resena.creado_en|date:"d/m/Y" }}
                     </div>
-                    {% endfor %}
+                    <div class="comment-text">{{ resena.comentario }}</div>
+
+                    <div class="comment-actions">
+                        {% if user.is_authenticated %}
+                        <button onclick="toggleReplyForm('reply-form-{{ resena.id }}')">↩ Responder</button>
+                        {% endif %}
+                        {% if user == resena.usuario %}
+                        <a href="{% url 'eliminar_resena' resena.id %}" class="btn-eliminar">🗑 Eliminar</a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Formulario de respuesta -->
+                    {% if user.is_authenticated %}
+                    <div id="reply-form-{{ resena.id }}" class="reply-form-area">
+                        <form method="POST" action="{% url 'dejar_resena' juego.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="parent_id" value="{{ resena.id }}">
+                            <textarea name="comentario" class="reply-textarea"
+                                      placeholder="Escribe tu respuesta..." required></textarea>
+                            <div style="margin-top:8px; display:flex; gap:8px;">
+                                <button type="submit" class="btn-primary-gmt"
+                                        style="padding:6px 16px; font-size:0.82rem;">Responder</button>
+                                <button type="button" class="btn-outline-gmt"
+                                        onclick="toggleReplyForm('reply-form-{{ resena.id }}')">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+
+                    <!-- Respuestas anidadas: visibles para todos -->
+                    {% if resena.replies.all %}
+                    <div class="replies">
+                        {% for respuesta in resena.replies.all %}
+                        <div class="comment" style="margin-bottom:10px;">
+                            <div class="comment-left">
+                                <div class="avatar-reply">{{ respuesta.usuario.username|first|upper }}</div>
+                            </div>
+                            <div class="comment-body">
+                                <div class="comment-meta">
+                                    <strong>{{ respuesta.usuario.username }}</strong>
+                                    {{ respuesta.creado_en|date:"d/m/Y" }}
+                                </div>
+                                <div class="comment-text">{{ respuesta.comentario }}</div>
+                                {% if user == respuesta.usuario %}
+                                <a href="{% url 'eliminar_resena' respuesta.id %}" class="btn-eliminar">🗑 Eliminar</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
                 </div>
-                {% endif %}
-
             </div>
-        </div>
-        {% endfor %}
-    {% else %}
-        <div class="empty-comments">
-            <span>💭</span>
-            Aún no hay comentarios. ¡Sé el primero en opinar!
-        </div>
-    {% endif %}
-</div>
-
+            {% endfor %}
+        {% else %}
+            <div class="empty-comments">
+                <span>💭</span>
+                Aún no hay comentarios. ¡Sé el primero en opinar!
+            </div>
+        {% endif %}
+    </div>
 
     <div class="mb-4">
         <a href="{% url 'juegos' %}" class="btn-outline-gmt" style="text-decoration:none;">← Volver al catálogo</a>
@@ -377,3 +378,4 @@
     }
 </script>
 {% endblock %}
+
